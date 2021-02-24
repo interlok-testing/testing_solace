@@ -1,0 +1,21 @@
+```plantuml
+@startuml
+storage Solace{
+usecase Sample.Q1[
+Queue1
+]
+usecase Sample.Q2[
+Queue2
+]
+usecase Sample.T1[
+Topic1
+]
+usecase Sample.T2[
+Topic2
+]
+}
+Sample.Q1 -> Sample.Q2 : JMS/JCSMP
+Sample.Q2 -> Sample.T1 : JMS/JCSMP
+Sample.T1 -> Sample.T2 : JMS/JCSMP
+@enduml
+```

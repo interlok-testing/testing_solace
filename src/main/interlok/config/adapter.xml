@@ -1,0 +1,192 @@
+<adapter>
+  <unique-id>solace-testing</unique-id>
+  <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+  <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+  <shared-components>
+    <connections>
+      <jms-connection>
+        <unique-id>solace-jms</unique-id>
+        <user-name>admin</user-name>
+        <password>admin</password>
+        <vendor-implementation class="basic-solace-implementation">
+          <broker-url>tcp://localhost:55555</broker-url>
+          <message-vpn>default</message-vpn>
+        </vendor-implementation>
+      </jms-connection>
+      <solace-jcsmp-connection>
+        <unique-id>solace-jcsmp</unique-id>
+        <host>tcp://localhost:55555</host>
+        <vpn>default</vpn>
+		<authentication-provider class="solace-jcsmp-basic-authentication">
+		  <username>admin</username>
+          <password>admin</password>
+		</authentication-provider>
+      </solace-jcsmp-connection>
+    </connections>
+    <services/>
+  </shared-components>
+  <event-handler class="default-event-handler">
+    <unique-id>DefaultEventHandler</unique-id>
+    <connection class="null-connection">
+      <unique-id>kickass-leakey</unique-id>
+    </connection>
+    <producer class="null-message-producer">
+      <unique-id>jolly-knuth</unique-id>
+    </producer>
+  </event-handler>
+  <heartbeat-event-interval>
+    <unit>MINUTES</unit>
+    <interval>60</interval>
+  </heartbeat-event-interval>
+  <message-error-handler class="null-processing-exception-handler">
+    <unique-id>cranky-ride</unique-id>
+  </message-error-handler>
+  <failed-message-retrier class="no-retries">
+    <unique-id>elegant-cori</unique-id>
+  </failed-message-retrier>
+  <channel-list>
+    <channel>
+      <consume-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="jms-consumer">
+            <unique-id>jms-jms-consumer</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <endpoint>jms:queue:Sample.Q1</endpoint>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>big-brattain</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="jms-producer">
+            <unique-id>jms-jms-producer</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="text-message-translator"/>
+            <delivery-mode>PERSISTENT</delivery-mode>
+            <session-factory class="jms-default-producer-session"/>
+            <endpoint>jms:topic:Sample.T1</endpoint>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>jms-jms-workflow</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>jms-jms-workflow-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>jms-jms-workflow-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>jms-jms</unique-id>
+      <auto-start>false</auto-start>
+    </channel>
+    <channel>
+      <consume-connection class="shared-connection">
+        <lookup-name>solace-jcsmp</lookup-name>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>solace-jcsmp</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="solace-jcsmp-queue-consumer">
+            <unique-id>jcsmp-jcsmp-consumer</unique-id>
+            <message-translator class="solace-jcsmp-text-message-translator">
+              <delivery-mode>PERSISTENT</delivery-mode>
+              <mappings/>
+            </message-translator>
+            <endpoint-permissions>CONSUME</endpoint-permissions>
+            <endpoint-access-type>EXCLUSIVE</endpoint-access-type>
+            <acknowledge-mode>CLIENT</acknowledge-mode>
+            <queue>Sample.Q1</queue>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>grave-newton</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="solace-jcsmp-topic-producer">
+            <unique-id>jcsmp-jcsmp-producer</unique-id>
+            <message-translator class="solace-jcsmp-text-message-translator">
+              <delivery-mode>PERSISTENT</delivery-mode>
+              <mappings/>
+            </message-translator>
+            <topic>Sample.T1</topic>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>jcsmp-jcsmp-workflow</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>jcsmp-jcsmp-workflow-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>jcsmp-jcsmp-workflow-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>jcsmp-jcsmp</unique-id>
+      <auto-start>false</auto-start>
+    </channel>
+    <channel>
+      <consume-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>solace-jcsmp</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="jms-consumer">
+            <unique-id>jms-jcsmp-consumer</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="text-message-translator"/>
+            <endpoint>jms:queue:Sample.Q1</endpoint>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>desperate-euclid</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="solace-jcsmp-topic-producer">
+            <unique-id>jms-jcsmp-producer</unique-id>
+            <message-translator class="solace-jcsmp-text-message-translator">
+              <delivery-mode>PERSISTENT</delivery-mode>
+              <mappings/>
+            </message-translator>
+            <topic>Sample.T1</topic>
+          </producer>
+          <produce-exception-handler class="null-produce-exception-handler"/>
+          <unique-id>jms-jcsmp-workflow</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>jms-jcsmp-workflow-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>jms-jcsmp-workflow-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>jms-jcsmp</unique-id>
+      <auto-start>false</auto-start>
+    </channel>
+  </channel-list>
+  <message-error-digester class="standard-message-error-digester">
+    <unique-id>ErrorDigest</unique-id>
+    <digest-max-size>100</digest-max-size>
+  </message-error-digester>
+</adapter>
