@@ -22,3 +22,15 @@ The third channel mixes the JMS API for consuming and the JCSMP API for producin
 
 ## Notes
 The Interlok UI starts up on port 8082, so as not to clash with any locally hosted Solace instance running it's UI on port 8080.
+
+### docker
+
+You can run solace inside docker, it'll look something like this 
+
+```
+  local IMAGE="solace/solace-pubsub-standard:latest"
+  docker pull $IMAGE
+  docker run -it --rm -p 127.0.0.1:55555:55555 -e username_admin_globalaccesslevel=admin -e username_admin_password=admin \
+         -e system_scaling_maxconnectioncount=100 --shm-size=1g --ulimit nofile=2448:38048 --ulimit core=1 \
+         -h solace.local "$IMAGE"
+```
