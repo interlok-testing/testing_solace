@@ -3,15 +3,22 @@
   "variableSets" : {
     "default" : { }
   },
-  "variableXpaths" : { },
+  "variableXpaths" : {
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/user-name" : "${username}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/password" : "${password}",
+    "/adapter/shared-components/connections/solace-jcsmp-connection[unique-id=\"solace-jcsmp\"]/authentication-provider/username" : "${username}",
+    "/adapter/shared-components/connections/solace-jcsmp-connection[unique-id=\"solace-jcsmp\"]/authentication-provider/password" : "${password}",
+    "/adapter/shared-components/connections/solace-jcsmp-connection[unique-id=\"solace-jcsmp\"]/host" : "${host}",
+    "/adapter/shared-components/connections/solace-jcsmp-connection[unique-id=\"solace-jcsmp\"]/vpn" : "${vpn}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/vendor-implementation/broker-url" : "${host}",
+    "/adapter/shared-components/connections/jms-connection[unique-id=\"solace-jms\"]/vendor-implementation/message-vpn" : "${vpn}"
+  },
   "uidInXincludeCompntListFileName" : false,
   "xincludeXpaths" : { },
   "additionalFiles" : {
-    "jetty.xml" : "jetty.xml",
-    "webdefault.xml" : "webdefault.xml",
     "bootstrap.properties" : "bootstrap.properties",
     "log4j2.xml" : "log4j2.xml"
   },
-  "optionalComponentsInUse" : [ "com.adaptris:interlok-solace:4.0-SNAPSHOT" ],
+  "optionalComponentsInUse" : [ "com.adaptris:interlok-solace:5.0-SNAPSHOT" ],
   "structured" : true
 }

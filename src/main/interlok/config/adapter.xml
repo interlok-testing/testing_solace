@@ -6,21 +6,54 @@
     <connections>
       <jms-connection>
         <unique-id>solace-jms</unique-id>
-        <user-name>admin</user-name>
-        <password>admin</password>
+        <user-name>${username}</user-name>
+        <password>${password}</password>
         <vendor-implementation class="basic-solace-implementation">
-          <broker-url>tcp://localhost:55555</broker-url>
-          <message-vpn>default</message-vpn>
+          <broker-url>${host}</broker-url>
+          <message-vpn>${vpn}</message-vpn>
         </vendor-implementation>
       </jms-connection>
       <solace-jcsmp-connection>
         <unique-id>solace-jcsmp</unique-id>
-        <host>tcp://localhost:55555</host>
-        <vpn>default</vpn>
-		<authentication-provider class="solace-jcsmp-basic-authentication">
-		  <username>admin</username>
-          <password>admin</password>
-		</authentication-provider>
+        <host>${host}</host>
+        <vpn>${vpn}</vpn>
+        <authentication-provider class="solace-jcsmp-basic-authentication">
+          <username>${username}</username>
+          <password>${password}</password>
+        </authentication-provider>
+        <advanced-properties>
+          <client-ack-mode>false</client-ack-mode>
+          <generate-sender-id>false</generate-sender-id>
+          <sub-ack-window-size>255</sub-ack-window-size>
+          <pub-ack-window-size>1</pub-ack-window-size>
+          <sub-ack-time>1000</sub-ack-time>
+          <pub-ack-time>2000</pub-ack-time>
+          <sub-ack-window-threshold>60</sub-ack-window-threshold>
+          <generate-rcv-timestamps>false</generate-rcv-timestamps>
+          <generate-send-timestamps>false</generate-send-timestamps>
+          <generate-sequence-numbers>false</generate-sequence-numbers>
+          <calculate-message-expiration>false</calculate-message-expiration>
+          <reapply-subscriptions>false</reapply-subscriptions>
+          <pub-use-intermediate-direct-buf>true</pub-use-intermediate-direct-buf>
+          <message-callback-on-reactor>false</message-callback-on-reactor>
+          <ignore-duplicate-subscription-error>false</ignore-duplicate-subscription-error>
+          <ignore-subscription-not-found-error>false</ignore-subscription-not-found-error>
+          <no-local>false</no-local>
+          <ack-event-mode>SUPPORTED_ACK_EVENT_MODE_PER_MSG</ack-event-mode>
+          <gd-reconnect-fail-action>GD_RECONNECT_FAIL_ACTION_AUTO_RETRY</gd-reconnect-fail-action>
+          <channel-connect-timeout-in-millis>30000</channel-connect-timeout-in-millis>
+          <channel-read-timeout-in-millis>10000</channel-read-timeout-in-millis>
+          <channel-connect-retries>0</channel-connect-retries>
+          <channel-reconnect-retries>3</channel-reconnect-retries>
+          <channel-connect-retries-per-host>0</channel-connect-retries-per-host>
+          <channel-reconnect-retry-wait-in-millis>3000</channel-reconnect-retry-wait-in-millis>
+          <channel-keep-alive-interval-in-millis>3000</channel-keep-alive-interval-in-millis>
+          <channel-keep-alive-limit>10</channel-keep-alive-limit>
+          <channel-send-buffer>65536</channel-send-buffer>
+          <channel-receive-buffer>65536</channel-receive-buffer>
+          <channel-tcp-no-delay>true</channel-tcp-no-delay>
+          <channel-compression-level>0</channel-compression-level>
+        </advanced-properties>
       </solace-jcsmp-connection>
     </connections>
     <services/>
@@ -46,6 +79,55 @@
   </failed-message-retrier>
   <channel-list>
     <channel>
+      <consume-connection class="null-connection">
+        <unique-id>peaceful-wiles</unique-id>
+      </consume-connection>
+      <produce-connection class="shared-connection">
+        <lookup-name>solace-jms</lookup-name>
+      </produce-connection>
+      <workflow-list>
+        <standard-workflow>
+          <consumer class="polling-trigger">
+            <unique-id>jms-jms-consumer</unique-id>
+            <poller class="fixed-interval-poller">
+              <poll-interval>
+                <unit>SECONDS</unit>
+                <interval>10</interval>
+              </poll-interval>
+            </poller>
+            <message-provider class="static-polling-trigger-template">
+              <template>A message</template>
+            </message-provider>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>big-brattain</unique-id>
+            <services/>
+          </service-collection>
+          <producer class="jms-producer">
+            <unique-id>trigger-jms-producer</unique-id>
+            <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="text-message-translator"/>
+            <delivery-mode>PERSISTENT</delivery-mode>
+            <session-factory class="jms-default-producer-session"/>
+            <endpoint>jms:queue:Sample.Q1</endpoint>
+          </producer>
+          <unique-id>jms-jms-workflow</unique-id>
+          <message-metrics-interceptor>
+            <unique-id>jms-jms-workflow-MessageMetrics</unique-id>
+            <timeslice-duration>
+              <unit>MINUTES</unit>
+              <interval>5</interval>
+            </timeslice-duration>
+            <timeslice-history-count>12</timeslice-history-count>
+          </message-metrics-interceptor>
+          <in-flight-workflow-interceptor>
+            <unique-id>jms-jms-workflow-InFlight</unique-id>
+          </in-flight-workflow-interceptor>
+        </standard-workflow>
+      </workflow-list>
+      <unique-id>trigger-jms</unique-id>
+    </channel>
+    <channel>
       <consume-connection class="shared-connection">
         <lookup-name>solace-jms</lookup-name>
       </consume-connection>
@@ -57,6 +139,9 @@
           <consumer class="jms-consumer">
             <unique-id>jms-jms-consumer</unique-id>
             <acknowledge-mode>CLIENT_ACKNOWLEDGE</acknowledge-mode>
+            <message-translator class="auto-convert-message-translator">
+              <jms-output-type>Text</jms-output-type>
+            </message-translator>
             <endpoint>jms:queue:Sample.Q1</endpoint>
           </consumer>
           <service-collection class="service-list">
@@ -71,7 +156,6 @@
             <session-factory class="jms-default-producer-session"/>
             <endpoint>jms:topic:Sample.T1</endpoint>
           </producer>
-          <produce-exception-handler class="null-produce-exception-handler"/>
           <unique-id>jms-jms-workflow</unique-id>
           <message-metrics-interceptor>
             <unique-id>jms-jms-workflow-MessageMetrics</unique-id>
@@ -87,7 +171,6 @@
         </standard-workflow>
       </workflow-list>
       <unique-id>jms-jms</unique-id>
-      <auto-start>false</auto-start>
     </channel>
     <channel>
       <consume-connection class="shared-connection">
@@ -102,7 +185,9 @@
             <unique-id>jcsmp-jcsmp-consumer</unique-id>
             <message-translator class="solace-jcsmp-text-message-translator">
               <delivery-mode>PERSISTENT</delivery-mode>
-              <mappings/>
+              <per-message-properties/>
+              <apply-per-message-properties-on-produce>false</apply-per-message-properties-on-produce>
+              <apply-per-message-properties-on-consume>false</apply-per-message-properties-on-consume>
             </message-translator>
             <endpoint-permissions>CONSUME</endpoint-permissions>
             <endpoint-access-type>EXCLUSIVE</endpoint-access-type>
@@ -117,11 +202,12 @@
             <unique-id>jcsmp-jcsmp-producer</unique-id>
             <message-translator class="solace-jcsmp-text-message-translator">
               <delivery-mode>PERSISTENT</delivery-mode>
-              <mappings/>
+              <per-message-properties/>
+              <apply-per-message-properties-on-produce>false</apply-per-message-properties-on-produce>
+              <apply-per-message-properties-on-consume>false</apply-per-message-properties-on-consume>
             </message-translator>
             <topic>Sample.T1</topic>
           </producer>
-          <produce-exception-handler class="null-produce-exception-handler"/>
           <unique-id>jcsmp-jcsmp-workflow</unique-id>
           <message-metrics-interceptor>
             <unique-id>jcsmp-jcsmp-workflow-MessageMetrics</unique-id>
@@ -162,11 +248,12 @@
             <unique-id>jms-jcsmp-producer</unique-id>
             <message-translator class="solace-jcsmp-text-message-translator">
               <delivery-mode>PERSISTENT</delivery-mode>
-              <mappings/>
+              <per-message-properties/>
+              <apply-per-message-properties-on-produce>false</apply-per-message-properties-on-produce>
+              <apply-per-message-properties-on-consume>false</apply-per-message-properties-on-consume>
             </message-translator>
             <topic>Sample.T1</topic>
           </producer>
-          <produce-exception-handler class="null-produce-exception-handler"/>
           <unique-id>jms-jcsmp-workflow</unique-id>
           <message-metrics-interceptor>
             <unique-id>jms-jcsmp-workflow-MessageMetrics</unique-id>

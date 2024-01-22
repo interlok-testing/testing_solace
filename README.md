@@ -16,24 +16,32 @@ The second channel uses the JCSMP API rather than the standard JMS API, but agai
 
 The third channel mixes the JMS API for consuming and the JCSMP API for producing.
 
-![solace diagram](/solace.png "solace diagram")
+```mermaid
+graph LR
+  subgraph Solace
+    direction LR
+    P_C(Polling Triggger Consumer) --> J_P_Q(JMS Producer Q1)
+    J_C_Q(JMS Consumer Q1) --> J_P_T(JMS Producer T1)
+  end
+
+  style P_C fill:#FF6C6C
+  style J_C_Q fill:#FF6C6C
+  style J_P_Q fill: #6C79FF
+  style J_P_T fill: #6C79FF
+
+```
  
 ## Getting started
+
+Before starting Interlok you need to create a Solace docker container with
+
+* `docker-compose up`
+
+Then start Interlok
 
 * `./gradlew clean build`
 * `(cd ./build/distribution && java -jar lib/interlok-boot.jar)`
 
 ## Notes
-The Interlok UI starts up on port 8082, so as not to clash with any locally hosted Solace instance running it's UI on port 8080.
 
-### docker
-
-You can run solace inside docker, it'll look something like this 
-
-```
-  local IMAGE="solace/solace-pubsub-standard:latest"
-  docker pull $IMAGE
-  docker run -it --rm -p 127.0.0.1:55555:55555 -e username_admin_globalaccesslevel=admin -e username_admin_password=admin \
-         -e system_scaling_maxconnectioncount=100 --shm-size=1g --ulimit nofile=2448:38048 --ulimit core=1 \
-         -h solace.local "$IMAGE"
-```
+The Solace Management Console UI starts up on port 8082, so as not to clash with Interlok UI running on port 8080.
