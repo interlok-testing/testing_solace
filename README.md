@@ -1,5 +1,8 @@
 # Solace Testing
 
+[![license](https://img.shields.io/github/license/interlok-testing/testing_solace.svg)](https://github.com/interlok-testing/testing_solace/blob/develop/LICENSE)
+[![Actions Status](https://github.com/interlok-testing/testing_solace/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/interlok-testing/testing_solace/actions/workflows/gradle-build.yml)
+
 Project tests interlok-solace features
 
 ## What it does
