@@ -21,6 +21,8 @@ graph LR
   subgraph Solace
     direction LR
     P_C(Polling Triggger Consumer) --> J_P_Q(JMS Producer Q1)
+    J_P_Q ---> Q1
+    Q1 ---> J_C_Q
     J_C_Q(JMS Consumer Q1) --> J_P_T(JMS Producer T1)
   end
 
