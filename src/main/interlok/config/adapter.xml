@@ -43,7 +43,7 @@
           <gd-reconnect-fail-action>GD_RECONNECT_FAIL_ACTION_AUTO_RETRY</gd-reconnect-fail-action>
           <channel-connect-timeout-in-millis>30000</channel-connect-timeout-in-millis>
           <channel-read-timeout-in-millis>10000</channel-read-timeout-in-millis>
-          <channel-connect-retries>0</channel-connect-retries>
+          <channel-connect-retries>3</channel-connect-retries>
           <channel-reconnect-retries>3</channel-reconnect-retries>
           <channel-connect-retries-per-host>0</channel-connect-retries-per-host>
           <channel-reconnect-retry-wait-in-millis>3000</channel-reconnect-retry-wait-in-millis>
