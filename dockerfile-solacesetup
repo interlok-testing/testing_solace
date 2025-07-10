@@ -1,0 +1,6 @@
+FROM curlimages/curl:8.14.1
+USER root
+COPY ./scripts/setup.sh /usr/local/bin/setup.sh
+RUN chmod u+x /usr/local/bin/setup.sh
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
+

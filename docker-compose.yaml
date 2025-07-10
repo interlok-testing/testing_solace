@@ -6,6 +6,9 @@ services:
       dockerfile: dockerfile
     environment:
       JAVA_OPTS:
+    depends_on:
+      solace-setup:
+        condition: service_completed_successfully
   solace:
     image: solace/solace-pubsub-standard:latest
     volumes:
@@ -57,9 +60,25 @@ services:
       #- '55443:55443'
       #SSH connection to CLI
       #- '2222:2222'
+    healthcheck:
+      test: curl -X GET --fail -u admin:admin solace-1:8080/SEMP/v2/config/msgVpns/default/queues
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     environment:
       - username_admin_globalaccesslevel=admin
       - username_admin_password=admin
       - system_scaling_maxconnectioncount=100
+  solace-setup:
+    build:
+      context: .
+      dockerfile: dockerfile-solacesetup
+    volumes:
+      - /scripts
+    depends_on:
+      solace:
+        condition: service_healthy
+
 volumes:
   storage-group:
